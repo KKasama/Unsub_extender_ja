@@ -1,0 +1,8 @@
+venv/
+.venv/
+__pycache__/
+*.pyc
+.DS_Store
+# private data: never commit your own Unsub exports
+export*.csv
+*_export.csv

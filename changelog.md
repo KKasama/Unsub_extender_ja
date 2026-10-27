@@ -1,5 +1,14 @@
 # Unsub Extender - Versioning Record and Changelog
 
+## Japanese edition (unreleased, private review)
+- Added unsub_extender_ja.py: Japanese / English interface switch, yen / dollar switch
+- Added "How the numbers are calculated" section and an explanation under every graph and sidebar filter
+- Terminology aligned with Unsub's Japanese interface; Japanese subject names
+- More robust CSV loading (skips extra title rows, friendly error for missing columns)
+- Fixed clipped text when zooming graphs
+- Removed third-party web analytics (Clicky, StatCounter)
+- Original unsub_extender.py is unchanged
+
 ## 3/24/2022, v.1.2
 - add RUSA/ETS BETA award information
 - add live demo webinar links
