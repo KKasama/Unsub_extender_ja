@@ -371,6 +371,7 @@ file = filename = "Unsub_export_example.csv"
 
 st.sidebar.subheader(L('Upload your Unsub export file', 'Unsub のエクスポートファイルをアップロード'))
 uploaded_file = st.sidebar.file_uploader(L("Must be a .csv file", ".csv ファイルを選択してください"), type='csv')
+st.sidebar.caption(L('The uploaded file is processed on the server that runs this app.', 'アップロードしたファイルは、このアプリを動かしているサーバーで処理されます。'))
 if uploaded_file is not None:
     file_details = {"FileName":uploaded_file.name,"FileType":uploaded_file.type,"FileSize":uploaded_file.size}
     #st.write(file_details)
@@ -379,11 +380,12 @@ if uploaded_file is not None:
     filename = uploaded_file.name
 
 # ---- Currency switch (Yen / USD) ----
-currency = st.sidebar.radio(L('Currency', '通貨'), ['JPY', 'USD'],
+currency = st.sidebar.radio(L('Currency of the amounts in your file', 'ファイルの金額の通貨'), ['JPY', 'USD'],
                             format_func=lambda x: L('Yen (¥)', '円（¥）') if x == 'JPY' else '$ (USD)',
                             index=0 if uploaded_file is not None else 1,
-                            help=L('The bundled sample data is in USD. Choose the currency of your Unsub export.', '付属のサンプルデータはドル建てです。Unsub のエクスポートの通貨を選んでください。'),
+                            help=L('No exchange-rate conversion is done. Choose the currency the amounts in your Unsub export are already in. The bundled sample data is in USD.', '為替の換算はしません。Unsub のエクスポートの金額が、すでに円なら「円」、ドルなら「$」を選んでください。付属のサンプルデータはドル建てです。'),
                             key='currency')
+st.sidebar.caption(L('Amounts are shown as they are in the file. No exchange-rate conversion is done.', '金額はファイルの値のまま表示します。為替の換算はしません。'))
 IS_JPY = (currency == 'JPY')
 CUR = '¥' if IS_JPY else '$'
 
@@ -1027,6 +1029,8 @@ html_string = L(
     "<p style=font-size:13px>v1.1, last modified Dec. 4, 2025 <br />Created by Eric Schares, Iowa State University <br /> Send any feedback, suggestions, bug reports, or success stories to <b>eschares@iastate.edu</b><br /><br />Japanese / English switch: unofficial modified version (AGPL-3.0)</p>",
     "<p style=font-size:13px>v1.1（原版）、最終更新 2025年12月4日 <br />原作：Eric Schares（アイオワ州立大学）<br />原版へのご意見・要望・不具合報告は <b>eschares@iastate.edu</b> 宛にお送りください。<br /><br />日本語/英語切り替え対応：非公式の改変版です（AGPL-3.0）。日本語表示に関する不具合は、原作者ではなく、この改変版の提供元にお問い合わせください。</p>")
 st.sidebar.markdown(html_string, unsafe_allow_html=True)
+st.sidebar.markdown(L('Source code of this Japanese edition (AGPL-3.0): [GitHub](https://github.com/KKasama/Unsub_extender_ja)',
+                      'この日本語版のソースコード（AGPL-3.0）：[GitHub](https://github.com/KKasama/Unsub_extender_ja)'))
 
 # NOTE: The original app embedded third-party web-analytics snippets (Clicky and StatCounter)
 # registered to the original author's accounts. They were removed in this modified version

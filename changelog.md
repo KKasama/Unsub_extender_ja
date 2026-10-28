@@ -7,6 +7,7 @@
 - More robust CSV loading (skips extra title rows, friendly error for missing columns)
 - Fixed clipped text when zooming graphs
 - Removed third-party web analytics (Clicky, StatCounter)
+- Currency switch renamed "Currency of the amounts in your file" (no exchange-rate conversion); notes on server-side processing and a source-code link added
 - Original unsub_extender.py is unchanged
 
 ## 3/24/2022, v.1.2

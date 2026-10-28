@@ -2,9 +2,8 @@
 
 [English](#english) | [日本語](#日本語)
 
-> **Status / 状況**: Private repository. This modified version is shared with the original author for review.
-> It is **not to be published or redistributed** until the original author (Eric Schares) has approved.
-> 非公開リポジトリです。原作者（Eric Schares 氏）の確認と了承が得られるまで、公開・再配布しません。
+> **Web version / Web 版**: https://unsub-extender-jpn.ijapan.info/ *(in preparation / 準備中)*
+> For users of our Japanese edition of Unsub (https://unsub-jpn.ijapan.info/). / 日本語版 Unsub（https://unsub-jpn.ijapan.info/）の利用者向けです。
 
 ---
 
@@ -20,7 +19,7 @@ The original script `unsub_extender.py` is kept unchanged next to the new `unsub
 ### What is different from the original
 
 - **Language switch** in the sidebar (日本語 / English). Most text is bilingual; the explanations under each graph are Japanese only.
-- **Currency switch** (yen ¥ / US dollar $). This only changes the symbol and axis ranges; **no exchange-rate conversion** is done. The currency is not read from the file.
+- **"Currency of the amounts in your file" switch** (yen ¥ / US dollar $). Unsub exports have no currency column, so you tell the app which currency your file is already in. This only changes the symbol and axis ranges; **no exchange-rate conversion** is done (a yen export stays in yen, a dollar export stays in dollars).
 - **"How the numbers are calculated" (計算のしくみ)** section: a plain-language explanation of Unsub's values (usage, CPU, CPU rank, free %) and of this app's own Instant Fill % (IF%) calculation.
 - **Explanation under every graph** (Japanese): what the graph shows, how to read it, how to use it.
 - **Explanation under every sidebar filter**, with a live count of how many journals fit that condition.
@@ -30,12 +29,17 @@ The original script `unsub_extender.py` is kept unchanged next to the new `unsub
 - Layout fixes so that text is not clipped when zooming a graph.
 - The third-party web-analytics snippets (Clicky, StatCounter) of the original were **removed**.
 
-### Requirements
+### Requirements (local copy only)
 
 - **Python 3.11** (Python 3.12 or newer cannot install the pinned pandas 1.5.3)
 - Packages in `requirements.txt`
 
-### Run
+### Use
+
+The main way to use this edition is the **web version** above: open it in your browser and upload the .csv exported from Unsub. The uploaded file is processed on the server that runs the app.
+
+Running a local copy is **not supported**. For reference only (developers), the steps are:
+
 
 ```bash
 # macOS (Homebrew): brew install python@3.11
@@ -45,7 +49,7 @@ pip install -r requirements.txt
 streamlit run unsub_extender_ja.py
 ```
 
-Open http://localhost:8501. Upload your Unsub export ("Export" → "Download as spreadsheet"), or use the bundled sample data (USD).
+Then open http://localhost:8501 and upload your Unsub export ("Export" → "Download as spreadsheet"), or use the bundled sample data (USD).
 
 ### Input file
 
@@ -86,7 +90,7 @@ Paper: Schares, E. (2022). *Quantitative Science Studies*. https://doi.org/10.11
 ### 元のバージョンとの違い
 
 - サイドバーに**言語の切り替え**（日本語 / English）を追加。画面の文言は日英両対応で、各グラフの下の解説は日本語のみです。
-- **通貨の切り替え**（円 ¥ / ドル $）。切り替わるのは記号と軸の範囲だけで、**為替の換算はしません**。通貨はファイルから自動判別しません。
+- **「ファイルの金額の通貨」の切り替え**（円 ¥ / ドル $）。Unsub のエクスポートには通貨の列がないため、ファイルの金額がどの通貨かを、利用者が選びます。切り替わるのは記号と軸の範囲だけで、**為替の換算はしません**（円のファイルは円のまま、ドルのファイルはドルのまま表示します）。
 - 「**計算のしくみ**」欄を追加。Unsub が計算済みの値（利用量、利用単価（CPU）、CPUランク、フリー率）と、このアプリ自身が計算するアクセス充足率（IF%）を、やさしい言葉で説明しています。
 - **各グラフの下に解説**（何を見るか、読み方、活用のしかた）を追加。
 - **絞り込みの各項目の下に解説**を追加。その条件だけで何誌が残るかも、リアルタイムで表示します。
@@ -96,12 +100,17 @@ Paper: Schares, E. (2022). *Quantitative Science Studies*. https://doi.org/10.11
 - グラフを拡大したときに文字が切れる問題を修正。
 - 元のアプリにあった外部のアクセス解析（Clicky、StatCounter）は**削除**しました。
 
-### 必要な環境
+### 必要な環境（ローカル実行の場合のみ）
 
 - **Python 3.11**（Python 3.12 以降では、指定の pandas 1.5.3 をインストールできません）
 - `requirements.txt` のパッケージ
 
-### 起動のしかた
+### 使い方
+
+主な使い方は、上の **Web 版**です。ブラウザで開き、Unsub から書き出した .csv をアップロードします。アップロードしたファイルは、アプリを動かしているサーバーで処理されます。
+
+ローカル（自分のパソコン）での実行は、**サポート対象外**です。開発者向けの参考として、手順を載せています。
+
 
 ```bash
 # macOS（Homebrew）の場合：brew install python@3.11
