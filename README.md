@@ -2,7 +2,7 @@
 
 [English](#english) | [日本語](#日本語)
 
-> **Web version / Web 版**: https://unsub-extender-jpn.ijapan.info/ *(in preparation / 準備中)*
+> **Web version / Web 版**: https://unsub-extender-jpn.ijapan.info/
 > For users of our Japanese edition of Unsub (https://unsub-jpn.ijapan.info/). / 日本語版 Unsub（https://unsub-jpn.ijapan.info/）の利用者向けです。
 
 ---
