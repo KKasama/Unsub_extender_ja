@@ -420,7 +420,8 @@ def load_data(file):
 
 st.header(L('Analyzing file "' + filename + '"', 'ファイル「' + filename + '」を分析中'))
 
-df = load_data(file)
+# .copy(): the cached DataFrame is shared by all sessions; work on a private copy so one user's edits never reach another user
+df = load_data(file).copy()
 
 _required_cols = ['title', 'downloads', 'citations', 'authorships', 'usage', 'subscription_cost', 'subscribed', 'cpu', 'cpu_rank',
                   'use_ill_percent', 'use_oa_percent', 'use_other_delayed_percent', 'use_subscription_percent', 'free_instant_usage_percent']
