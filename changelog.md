@@ -1,6 +1,16 @@
 # Unsub Extender - Versioning Record and Changelog
 
-## Japanese edition (unreleased, private review)
+## Japanese edition v1.1 (2026-10-31) / 日本語版 v1.1
+
+Fixes / 修正
+- Edits to the "Subscribed" status (TRUE / FALSE / MAYBE) no longer leak between users. The app now works on a private copy of the cached data, so changes made on the bundled sample (or any identical file) cannot appear for another user. / 「購読」の変更が、同じ内容のファイルを開いた別の利用者の画面に出てしまう問題を修正しました（付属サンプルなど）。人ごとにデータのコピーで作業します。
+- The currency choice is now kept separately for an uploaded file (default: yen) and for the bundled sample (default: USD). Removing an uploaded file no longer leaves the USD sample displayed as yen. / 通貨の選択を、アップロードしたファイル用（初期値は円）と付属サンプル用（初期値は$）に分けました。ファイルを外したあとも、サンプルが円表示のままになりません。
+- The CPU histogram now scales its bin width and initial range to the data (about 100 bins up to the 99th percentile), instead of fixed 200-yen / 1-dollar bins. This fixes the single thick bar shown when the selected currency and the data did not match, and gives a readable histogram for yen files. / 利用単価（CPU）のヒストグラムの区間の幅と表示範囲を、データに合わせて自動で決めるようにしました（上位1%の値までを約100区間に分けます）。通貨の選択とデータが合わないときに1本の太い棒になる問題を直し、円のファイルでも見やすく表示します。
+
+Operations / 運用
+- The web version runs at https://unsub-extender-jpn.ijapan.info/ and takes the latest code from this repository each time the server restarts. / Web版は https://unsub-extender-jpn.ijapan.info/ で動いており、サーバーの再起動のたびに、このリポジトリの最新のコードを取り込みます。
+
+## Japanese edition v1.0 (2026-10, first public release) / 日本語版 v1.0（初回公開）
 - Added unsub_extender_ja.py: Japanese / English interface switch, yen / dollar switch
 - Added "How the numbers are calculated" section and an explanation under every graph and sidebar filter
 - Terminology aligned with Unsub's Japanese interface; Japanese subject names
@@ -8,6 +18,7 @@
 - Fixed clipped text when zooming graphs
 - Removed third-party web analytics (Clicky, StatCounter)
 - Currency switch renamed "Currency of the amounts in your file" (no exchange-rate conversion); notes on server-side processing and a source-code link added
+- Web version published; published after confirmation with the original author, Eric Schares
 - Original unsub_extender.py is unchanged
 
 ## 3/24/2022, v.1.2
