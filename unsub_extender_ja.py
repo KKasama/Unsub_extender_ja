@@ -384,7 +384,7 @@ currency = st.sidebar.radio(L('Currency of the amounts in your file', 'ファイ
                             format_func=lambda x: L('Yen (¥)', '円（¥）') if x == 'JPY' else '$ (USD)',
                             index=0 if uploaded_file is not None else 1,
                             help=L('No exchange-rate conversion is done. Choose the currency the amounts in your Unsub export are already in. The bundled sample data is in USD.', '為替の換算はしません。Unsub のエクスポートの金額が、すでに円なら「円」、ドルなら「$」を選んでください。付属のサンプルデータはドル建てです。'),
-                            key='currency')
+                            key=('currency_upload' if uploaded_file is not None else 'currency_sample'))   # separate keys: the sample (USD) must not inherit a yen choice made for an uploaded file
 st.sidebar.caption(L('Amounts are shown as they are in the file. No exchange-rate conversion is done.', '金額はファイルの値のまま表示します。為替の換算はしません。'))
 IS_JPY = (currency == 'JPY')
 CUR = '¥' if IS_JPY else '$'
