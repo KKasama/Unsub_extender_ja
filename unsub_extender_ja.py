@@ -112,7 +112,7 @@ LAYOUT = {
     'linked': "**この表示の構成**：4つのグラフで、縦軸はすべて利用量（加重係数含む）です。横軸は、左上から順に「ダウンロード数」「被引用数」「オーサーシップ数」「フリー率%」です。1つの点が1誌で、色と形は購読の値を表します。右の凡例をクリックすると、その購読の値だけが強調されます。",
     'if_cost': "**この表示の構成**：横軸＝ジャーナルの費用、縦軸＝アクセス充足率（IF%）。1つの点が1誌です。色と形は購読の値を表します。",
     'if_price': "**この表示の構成**：横軸＝IF%1ポイントあたりの価格（対数目盛。右ほど高い）、縦軸＝アクセス充足率（IF%）。1つの点が1誌です。色と形は購読の値を表します。",
-    'cpu_hist': "**この表示の構成**：横軸＝利用単価（CPU）の区間（円では200円刻み、ドルでは1ドル刻み）、縦軸＝ジャーナル数です。小さな1ブロックが1誌で、色は購読の値を表します（青＝TRUE、赤＝FALSE、緑＝MAYBE、灰色＝空欄）。",
+    'cpu_hist': "**この表示の構成**：横軸＝利用単価（CPU）の区間（区間の幅は、データに合わせて自動で決めます。全体で約100区間です）、縦軸＝ジャーナル数です。小さな1ブロックが1誌で、色は購読の値を表します（青＝TRUE、赤＝FALSE、緑＝MAYBE、灰色＝空欄）。",
     'subject': "**この表示の構成**：横軸＝主題分野、縦軸＝CPUランク（上ほど効率が悪い）です。1つの点が1誌で、色と形は購読の値を表します。",
 }
 
@@ -471,6 +471,21 @@ df.loc[fix_filt,'cpu_rank']= int(max(df['cpu_rank']))   #moves cpu_rank of 0 to 
 
 #move anything with weighted usage of 0 to 1 so log graphs work
 df = df.replace({'usage':0}, 1)
+
+# Histogram scale follows the data (about 100 bins up to the 99th percentile of CPU), so that any file looks right in either currency
+_cpu_vals = pd.to_numeric(df['cpu'], errors='coerce')
+_cpu_vals = _cpu_vals[_cpu_vals > 0]
+if len(_cpu_vals) > 0:
+    _p99 = float(_cpu_vals.quantile(0.99))
+    _mag = 10 ** np.floor(np.log10(_p99))
+    for _m in (1, 2, 5, 10):
+        if _m * _mag >= _p99:
+            break
+    _hmax = _m * _mag
+    HIST_STEP = _hmax / 100
+    HIST_DOMAIN = [-HIST_STEP, _hmax]
+    HIST_MAX_EN = CUR + format(int(_hmax), ',')
+    HIST_MAX_JA = (format(int(_hmax), ',') + '円') if IS_JPY else ('$' + format(int(_hmax), ','))
 
 #process data to calculate IF%
 #check and don't redo if IF% column already exists - rerunning a file through UE
