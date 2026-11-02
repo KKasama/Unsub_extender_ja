@@ -1,5 +1,10 @@
 # Unsub Extender - Versioning Record and Changelog
 
+## Japanese edition v1.2 (2026-11-02) / 日本語版 v1.2
+
+Fixes / 修正
+- The "Change a journal's Subscribed status" box now stays open from the first journal selection until "Commit change!" is pressed. Before, it collapsed after every selection, so the box had to be reopened each time to choose TRUE / MAYBE / FALSE. After committing, the box closes. / 「ジャーナルの購読を変更」の枠が、ジャーナルを選ぶたびに閉じてしまう問題を修正しました。最初にジャーナルを選んでから「変更を確定！」を押すまで、枠は開いたままになります（確定後は閉じます）。毎回開け直して、TRUE・MAYBE・FALSE を選ぶ必要はありません。
+
 ## Japanese edition v1.1 (2026-10-31) / 日本語版 v1.1
 
 Fixes / 修正
