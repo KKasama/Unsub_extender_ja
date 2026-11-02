@@ -618,24 +618,32 @@ if 'to_blank' not in st.session_state:
 
 
 #Put Modifier down here after the filt definition so only those titles that meet the filt show up, but put into empty slot further up the sidebar for flow
+# Keep the "change Subscribed status" box open from the first selection until the change is committed
+if 'mod_open' not in st.session_state:
+    st.session_state.mod_open = False
+def _mod_keep_open():
+    st.session_state.mod_open = True
+def _mod_close():
+    st.session_state.mod_open = False
+
 with sidebar_modifier_slot:
-    with st.expander(L("Expand to select:", "開いて選択:")):
+    with st.expander(L("Expand to select:", "開いて選択:"), expanded=st.session_state.mod_open):
         filtered_titles_df = df.loc[filt]['title']      #make a new df with only the valid titles
         #then give those valid titles as choices in the Modifier, was causing problems when trying to offer them through a filter, kept trying to use the index but wouldn't be there anymore
-        selected_titles = st.multiselect(L('Journal Name:', 'ジャーナル名:'), pd.Series(filtered_titles_df.reset_index(drop=True)), help=L('Displayed in order provided by the underlying datafile', 'ファイル内の並び順で表示されます'))
+        selected_titles = st.multiselect(L('Journal Name:', 'ジャーナル名:'), pd.Series(filtered_titles_df.reset_index(drop=True)), help=L('Displayed in order provided by the underlying datafile', 'ファイル内の並び順で表示されます'), key='mod_titles', on_change=_mod_keep_open)
         #st.write(selected_titles)
     
         col1, col2 = st.columns([2,1])
     
         with col1:
-            radiovalue = st.radio(L("Change 'Subscribed' status to:", "「購読」を次の値に変更:"), ['TRUE', 'MAYBE', 'FALSE', '(blank)'], format_func=status_label)
+            radiovalue = st.radio(L("Change 'Subscribed' status to:", "「購読」を次の値に変更:"), ['TRUE', 'MAYBE', 'FALSE', '(blank)'], format_func=status_label, key='mod_radio', on_change=_mod_keep_open)
             if radiovalue == "(blank)":
                 radiovalue = " "
                 #write(radiovalue)
         with col2:
             st.write(" ")       #Move the Commit button down vertically
             st.write(" ")       #I'm sure there's a smarter way to do this, but oh well
-            if st.button(L('Commit change!', '変更を確定！')):
+            if st.button(L('Commit change!', '変更を確定！'), on_click=_mod_close):
                 for title in selected_titles:
                     clear_title_from_list(title)  #remove title from all lists, so we only keep the most recent change
                                                     #note we are not clearing all 4 lists, just removing one title at a time
