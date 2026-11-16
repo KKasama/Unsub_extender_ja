@@ -1,5 +1,11 @@
 # Unsub Extender - Versioning Record and Changelog
 
+## Japanese edition v1.3 (2026-11-17) / 日本語版 v1.3
+
+Fixes / 修正
+- Fixed: after uploading an Unsub export, the screen could switch back to the bundled sample data after a while. When the browser connection is interrupted (the computer sleeps, the network changes, or the tab stays idle), the page is re-created and the uploaded file was lost. The app now keeps a private copy of the uploaded file on the server (only while you keep using the page: it is deleted automatically 2 hours after your last action; each visitor has a separate copy, found only through a random secret code in the page address) and restores the file, the currency choice, and the Subscribed changes automatically after a reconnect. / Unsub のエクスポートをアップロードしても、しばらくするとサンプルデータの表示に戻ってしまう問題を修正しました。ブラウザとの接続が途切れる（パソコンのスリープ、ネットワークの切り替え、タブの放置など）と、画面が作り直され、アップロードしたファイルが失われていました。今後は、アップロードしたファイルを、画面を使っている間だけサーバーに保管し（最後の操作から2時間で自動的に削除します。お客様ごとに別々の保管で、ページのアドレスに入る秘密の符号でだけ呼び出せます）、接続が戻ったときに、ファイル・通貨の選択・購読の変更を自動で復元します。
+- Added a "Delete my uploaded data from the server" button. Removing the file with the x button also deletes the server copy. Other users never see your data; do not share the page address while your data is loaded. / 「アップロードしたデータをサーバーから削除」ボタンを追加しました。ファイルの「×」で外したときも、サーバーの保管データを削除します。ほかの利用者に見えることはありませんが、データを読み込み中のページのアドレスは、他の人に共有しないでください。
+
 ## Japanese edition v1.2 (2026-11-02) / 日本語版 v1.2
 
 Fixes / 修正
