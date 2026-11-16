@@ -379,12 +379,86 @@ if uploaded_file is not None:
     file = uploaded_file
     filename = uploaded_file.name
 
+# ---- Keep the uploaded file across connection drops (restore after reconnect) ----
+import io, time, secrets, threading
+
+@st.cache(allow_output_mutation=True)
+def _ue_store():
+    return {}      # token -> {'bytes','name','ts','cur','to_true','to_false','to_maybe','to_blank'}
+@st.cache(allow_output_mutation=True)
+def _ue_lock():
+    return threading.Lock()   # many customers use the server at the same time: serialize changes to the shared store
+_lock = _ue_lock()
+_store = _ue_store()
+_TTL_SEC = 2 * 3600      # idle time after which the copy is deleted
+def _purge_store():
+    with _lock:
+        _now = time.time()
+        for _k in [k for k, v in _store.items() if _now - v['ts'] > _TTL_SEC]:
+            _store.pop(_k, None)
+        while len(_store) > 200 or sum(len(v['bytes']) for v in _store.values()) > 600 * 1024 * 1024:
+            _store.pop(min(_store, key=lambda k: _store[k]['ts']), None)
+_purge_store()
+
+_tok = (st.experimental_get_query_params().get('s') or [''])[0]
+_restored = False
+_cur_tok = None
+if uploaded_file is not None:
+    st.session_state['ue_had_upload'] = True
+    _data = uploaded_file.getvalue()
+    _ent = _store.get(_tok)
+    if _ent is None or _ent['name'] != uploaded_file.name or _ent['bytes'] != _data:
+        with _lock:
+            _store.pop(_tok, None)                   # a different file: drop the old copy
+            _tok = secrets.token_urlsafe(16)
+            _store[_tok] = {'bytes': _data, 'name': uploaded_file.name, 'ts': time.time()}
+        st.experimental_set_query_params(s=_tok)
+        for _k in ('to_true', 'to_false', 'to_maybe', 'to_blank'):
+            st.session_state.pop(_k, None)           # edits belong to the previous file
+    _cur_tok = _tok
+elif st.session_state.get('ue_had_upload'):
+    # the user removed the file with the x button: forget the server-side copy too
+    with _lock:
+        _store.pop(_tok, None)
+    st.experimental_set_query_params()
+    st.session_state['ue_had_upload'] = False
+elif _tok in _store:
+    # the connection was dropped and the page was re-created: restore the file, the currency and the edits
+    _ent = _store.get(_tok)
+    _buf = io.BytesIO(_ent['bytes'])
+    file = _buf
+    filename = _ent['name']
+    _restored = True
+    _cur_tok = _tok
+    if 'ue_restored' not in st.session_state:
+        st.session_state['ue_restored'] = True
+        st.session_state['currency_upload'] = _ent.get('cur', 'JPY')
+        for _k in ('to_true', 'to_false', 'to_maybe', 'to_blank'):
+            st.session_state[_k] = list(_ent.get(_k, []))
+_has_user_file = (uploaded_file is not None) or _restored
+
+def _ue_discard():
+    with _lock:
+        _store.pop(_tok, None)
+    st.experimental_set_query_params()
+    st.session_state['ue_had_upload'] = False
+    st.session_state.pop('ue_restored', None)
+    for _k in ('to_true', 'to_false', 'to_maybe', 'to_blank'):
+        st.session_state.pop(_k, None)
+if _restored:
+    st.sidebar.info(L('The connection was interrupted, so your uploaded file "%s" was restored automatically.' % filename,
+                      '接続が一度切れたため、アップロード済みのファイル「%s」を自動で復元しました。' % filename))
+if _has_user_file:
+    st.sidebar.button(L('Delete my uploaded data from the server', 'アップロードしたデータをサーバーから削除'), on_click=_ue_discard)
+    st.sidebar.caption(L('To resume after a drop, your data is kept on the server only while you keep using this page (deleted automatically 2 hours after your last action), under a secret code in this page address. Each visitor has a separate copy. Do not share this page address with others.',
+                         '接続が切れても続きから使えるよう、アップロードしたデータを、この画面を使っている間だけサーバーに保管します（最後の操作から2時間で自動的に削除します）。保管データは、お客様ごとに別々で、このページのアドレスに含まれる秘密の符号でだけ呼び出せます。このページのアドレスは、他の人に共有しないでください。'))
+
 # ---- Currency switch (Yen / USD) ----
 currency = st.sidebar.radio(L('Currency of the amounts in your file', 'ファイルの金額の通貨'), ['JPY', 'USD'],
                             format_func=lambda x: L('Yen (¥)', '円（¥）') if x == 'JPY' else '$ (USD)',
-                            index=0 if uploaded_file is not None else 1,
+                            index=0 if _has_user_file else 1,
                             help=L('No exchange-rate conversion is done. Choose the currency the amounts in your Unsub export are already in. The bundled sample data is in USD.', '為替の換算はしません。Unsub のエクスポートの金額が、すでに円なら「円」、ドルなら「$」を選んでください。付属のサンプルデータはドル建てです。'),
-                            key=('currency_upload' if uploaded_file is not None else 'currency_sample'))   # separate keys: the sample (USD) must not inherit a yen choice made for an uploaded file
+                            key=('currency_upload' if _has_user_file else 'currency_sample'))   # separate keys: the sample (USD) must not inherit a yen choice made for an uploaded file
 st.sidebar.caption(L('Amounts are shown as they are in the file. No exchange-rate conversion is done.', '金額はファイルの値のまま表示します。為替の換算はしません。'))
 IS_JPY = (currency == 'JPY')
 CUR = '¥' if IS_JPY else '$'
@@ -1059,3 +1133,10 @@ st.sidebar.markdown(L('Source code of this Japanese edition (AGPL-3.0): [GitHub]
 # NOTE: The original app embedded third-party web-analytics snippets (Clicky and StatCounter)
 # registered to the original author's accounts. They were removed in this modified version
 # so that usage of this copy is not reported to those accounts.
+
+# ---- Save the current choices so that they survive a connection drop ----
+with _lock:
+    if _cur_tok in _store:
+        _store[_cur_tok].update({'ts': time.time(), 'cur': currency,
+                                 'to_true': list(st.session_state.get('to_true', [])), 'to_false': list(st.session_state.get('to_false', [])),
+                                 'to_maybe': list(st.session_state.get('to_maybe', [])), 'to_blank': list(st.session_state.get('to_blank', []))})
